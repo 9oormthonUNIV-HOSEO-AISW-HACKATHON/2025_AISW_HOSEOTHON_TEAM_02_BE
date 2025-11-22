@@ -244,10 +244,10 @@ public class DataLoader implements CommandLineRunner {
 
 	private Genre mapGenre(String genreKey) {
 		return switch (genreKey) {
-			case "emo" -> Genre.emo;
-			case "dance" -> Genre.dance;
-			case "hip" -> Genre.hip;
-			case "vocal" -> Genre.vocal;
+			case "emo" -> Genre.EMOTIONAL;
+			case "dance" -> Genre.DANCE;
+			case "hip" -> Genre.HIPHOP;
+			case "vocal" -> Genre.VOCAL;
 			default -> throw new IllegalArgumentException("Unknown genre key: " + genreKey);
 		};
 	}

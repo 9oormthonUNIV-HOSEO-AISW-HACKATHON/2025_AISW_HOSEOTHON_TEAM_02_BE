@@ -19,7 +19,7 @@ public class SongService {
     private final SongRepository songRepository;
 
     public List<SongResponse> getSongCandidates(String generation, String genre) {
-        Genre genreEnum = Genre.valueOf(genre.toUpperCase());
+        Genre genreEnum = Genre.fromString(genre);
         List<Song> songs = songRepository.findByGenerationAndGenre(generation, genreEnum);
 
         return songs.stream()
