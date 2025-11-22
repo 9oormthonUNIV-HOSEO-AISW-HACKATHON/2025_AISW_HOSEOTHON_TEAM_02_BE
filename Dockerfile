@@ -1,5 +1,5 @@
 # 1단계: 빌드
-FROM eclipse-temurin:21-jdk-jammy AS builder
+FROM eclipse-temurin:17-jdk-jammy AS builder
 
 WORKDIR /workspace/app
 
@@ -17,11 +17,11 @@ RUN chmod +x ./gradlew
 COPY src src
 
 # 테스트 제외하고 빌드 실행
-RUN ./gradlew build --no-daemon -x test
+RUN ./gradlew build --no-daemon -x test --stacktrace
 
 
 # 2단계: 실행
-FROM eclipse-temurin:21-jre-jammy
+FROM eclipse-temurin:17-jre-jammy
 
 WORKDIR /app
 
