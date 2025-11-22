@@ -53,12 +53,13 @@ public class ExchangeService {
 				recommendedUser);
 			if (!playlists.isEmpty()) {
 				Playlist playlistToShare = playlists.get(0); // 첫 번째 플레이리스트를 공유
-				                List<SongResponse> songs = playlistToShare.getPlaylistSongs().stream()
-				                        .map(PlaylistSong::getSong)
-				                        .map(SongResponse::from)
-				                        .collect(Collectors.toList());
+				List<SongResponse> songs = playlistToShare.getPlaylistSongs().stream()
+					.map(PlaylistSong::getSong)
+					.map(SongResponse::from)
+					.collect(Collectors.toList());
 				return UserRecommendationDetailResponse.builder()
 					.targetUserCode(recommendedUser.getAuthCode())
+					.playlistId(playlistToShare.getId())
 					.songs(songs)
 					.build();
 			}

@@ -1,22 +1,20 @@
 package com.backend.dosol.config;
 
-import com.backend.dosol.entity.Song;
+import com.backend.dosol.entity.*;
 import com.backend.dosol.entity.type.Genre;
-import com.backend.dosol.repository.SongRepository;
-import com.fasterxml.jackson.core.type.TypeReference;
+import com.backend.dosol.repository.*;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Slf4j
 @Component
@@ -24,16 +22,29 @@ import java.util.Map;
 public class DataLoader implements CommandLineRunner {
 
 	private final SongRepository songRepository;
+	private final UserRepository userRepository;
+	private final PlaylistRepository playlistRepository;
+	private final PlaylistSongRepository playlistSongRepository;
+	private final ReviewRepository reviewRepository;
+
 
 	@Override
 	@Transactional
 	public void run(String... args) throws Exception {
-		if (songRepository.count() > 0) {
+		if (songRepository.count() > 0 || userRepository.count() > 0) {
 			log.info("이미 데이터가 존재하여 더미 데이터를 생성하지 않습니다.");
 			return;
 		}
-		log.info("더미 노래 데이터 생성 시작...");
 
+		// 1. 노래 데이터 생성
+		createSongData();
+
+		// 2. 유저, 플레이리스트, 리뷰 데이터 생성
+		//createUserData();
+	}
+
+	private void createSongData() throws Exception {
+		log.info("더미 노래 데이터 생성 시작...");
 		String jsonContent = """
 			{
 			  "gen1": {
@@ -189,15 +200,15 @@ public class DataLoader implements CommandLineRunner {
 			      "NCT 127 – 2 Baddies", "SEVENTEEN – Super", "ATEEZ – Say My Name(Remaster)", "ZEROBASEONE – New Kidz On The Block", "THE BOYZ – Maverick",
 			      "CIX – Jungle", "P1Harmony – Scared", "JUST B – Damage", "Stray Kids – Thunderous", "ATEEZ – Deja Vu",
 			      "NMIXX – TANK", "Xdinary Heroes – Hair Cut", "RIIZE – Siren(힙합 ver.)", "BOYNEXTDOOR – But Sometimes", "ENHYPEN – Paradoxxx Invasion",
-			      "NCT DREAM – Countdown", "TXT – Good Boy Gone Bad", "TREASURE – DARARI(Remix Hip ver.)", "XG – Tippy Toes"
+			      "NCT DREAM – Countdown", "TXT – Good Boy Gone Bad", "TREASRE – DARARI(Remix Hip ver.)", "XG – Tippy Toes"
 			    ],
 			    "vocal": [
 			      "Stray Kids – Back Door", "Stray Kids – Topline", "ATEEZ – Guerrilla", "TXT – LO$ER LOVER", "ENHYPEN – Blessed-Cursed",
 			      "TREASURE – JIKJIN", "BSS – Fighting", "Xdinary Heroes – Test Me", "TNX – Move", "NCT DREAM – Glitch Mode",
 			      "NCT 127 – 2 Baddies", "SEVENTEEN – Super", "ATEEZ – Say My Name(Remaster)", "ZEROBASEONE – New Kidz On The Block", "THE BOYZ – Maverick",
-			      "CIX – Jungle", "P1Harmony – Scared", "JUST B – Damage", "Stray Kids – Thunderous", "ATEEZ – Deja Vu",
-			      "NMIXX – TANK", "Xdinary Heroes – Hair Cut", "RIIZE – Siren(힙합 ver.)", "BOYNEXTDOOR – But Sometimes", "ENHYPEN – Paradoxxx Invasion",
-			      "NCT DREAM – Countdown", "TXT – Good Boy Gone Bad", "TREASURE – DARARI(Remix Hip ver.)", "XG – Tippy Toes"
+			   			"CIX – Jungle", "P1Harmony – Scared", "JUST B – Damage", "Stray Kids – Thunderous", "ATEEZ – Deja Vu",
+			   			"NMIXX – TANK", "Xdinary Heroes – Hair Cut", "RIIZE – Siren(힙합 ver.)", "BOYNEXTDOOR – But Sometimes", "ENHYPEN – Paradoxxx Invasion",
+			   			"NCT DREAM – Countdown", "TXT – Good Boy Gone Bad", "TREASURE – DARARI(Remix Hip ver.)", "XG – Tippy Toes"
 			    ]
 			  }
 			}
@@ -241,6 +252,74 @@ public class DataLoader implements CommandLineRunner {
 
 		log.info("더미 노래 데이터 생성 완료! 총 {}개의 노래가 저장되었습니다.", songRepository.count());
 	}
+	/*private void createUserData() {
+		log.info("더미 유저, 플레이리스트, 리뷰 데이터 생성 시작...");
+
+		List<String> generations = List.of("gen1", "gen2", "gen3", "gen4");
+		List<Genre> genres = Stream.of(Genre.values()).toList();
+		Random random = new Random();
+
+		List<User> createdUsers = new ArrayList<>();
+
+		// 1. 유저 생성
+		for (String generation : generations) {
+			for (Genre genre : genres) {
+				String nickname = generation.toUpperCase() + "-" + genre.name().substring(0, 3) + "-유저";
+				String authCode = UUID.randomUUID().toString().substring(0, 6).toUpperCase();
+				User user = User.builder()
+						.nickname(nickname)
+						.authCode(authCode)
+						.generation(generation)
+						.favoriteGenre(genre)
+						.build();
+				createdUsers.add(userRepository.save(user));
+			}
+		}
+		log.info("{}명의 더미 유저 생성 완료.", createdUsers.size());
+
+
+		// 2. 각 유저별 플레이리스트 생성
+		for (User user : createdUsers) {
+			Playlist playlist = Playlist.builder()
+					.title(user.getNickname() + "의 플레이리스트")
+					.user(user)
+					.build();
+			playlistRepository.save(playlist);
+
+			// 해당 유저의 취향에 맞는 노래 5곡을 무작위로 추가
+			List<Song> songs = songRepository.findByGenerationAndGenre(user.getGeneration(), user.getFavoriteGenre(), PageRequest.of(0, 5));
+			for (Song song : songs) {
+				PlaylistSong playlistSong = PlaylistSong.builder()
+						.playlist(playlist)
+						.song(song)
+						.build();
+				playlistSongRepository.save(playlistSong);
+			}
+		}
+		log.info("{}개의 더미 플레이리스트 및 수록곡 생성 완료.", createdUsers.size());
+
+
+		// 3. 리뷰 생성
+		int reviewCount = 30;
+		for (int i = 0; i < reviewCount; i++) {
+			User writer = createdUsers.get(random.nextInt(createdUsers.size()));
+			User targetUser = createdUsers.get(random.nextInt(createdUsers.size()));
+
+			// 자기 자신에게는 리뷰를 남기지 않음
+			if (writer.getId().equals(targetUser.getId())) {
+				i--; // 재시도
+				continue;
+			}
+
+			Review review = Review.builder()
+					.writer(writer)
+					.targetUser(targetUser)
+					.content("이 분 플레이리스트 정말 독특하고 좋네요! 잘 듣고 갑니다.")
+					.build();
+			reviewRepository.save(review);
+		}
+		log.info("{}개의 더미 리뷰 생성 완료.", reviewCount);
+	}*/
 
 	private Genre mapGenre(String genreKey) {
 		return switch (genreKey) {
