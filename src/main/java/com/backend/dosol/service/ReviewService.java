@@ -42,4 +42,10 @@ public class ReviewService {
 
 		return reviewRepository.findAllByTargetUser(targetUser);
 	}
+
+	@Transactional(readOnly = true)
+	public User getUserByCode(String userCode) {
+		return userRepository.findByAuthCode(userCode)
+			.orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
+	}
 }

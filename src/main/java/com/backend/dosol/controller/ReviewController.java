@@ -35,6 +35,10 @@ public class ReviewController {
 	@Operation(summary = "나에게 달린 감상평 목록 조회", description = "나의 userCode로 다른 사용자들이 내 플레이리스트에 대해 작성한 모든 감상평 목록을 조회합니다.")
 	public ResponseEntity<DataResponse<MyReviewsResponse>> getMyReviews(
 		@Parameter(description = "조회할 사용자의 고유 코드", example = "A1B2C3") @PathVariable String userCode) {
+		// User 정보 조회
+		var user = reviewService.getUserByCode(userCode);
+
+		// 리뷰 목록 조회
 		List<Review> reviews = reviewService.getMyReviews(userCode);
 
 		List<ReviewResponse> reviewResponses = reviews.stream()
@@ -43,6 +47,8 @@ public class ReviewController {
 
 		MyReviewsResponse response = MyReviewsResponse.builder()
 			.ownerCode(userCode)
+			.generation(user.getGeneration())
+			.favoriteGenre(user.getFavoriteGenre())
 			.reviews(reviewResponses)
 			.build();
 
