@@ -1,4 +1,4 @@
-package com.backend.dosol.dto;
+package com.backend.dosol.dto.playlist;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -10,5 +10,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class PlaylistCompleteResponse {
-    private String userCode;
+
+	private String userCode;
+	private Long playlistId;
 }

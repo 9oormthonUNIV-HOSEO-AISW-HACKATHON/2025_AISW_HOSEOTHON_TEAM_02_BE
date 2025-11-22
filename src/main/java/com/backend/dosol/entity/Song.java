@@ -3,7 +3,10 @@ package com.backend.dosol.entity;
 
 import com.backend.dosol.entity.type.Genre;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
@@ -22,22 +25,25 @@ public class Song { // 노래는 생성일자가 굳이 필요 없다면 BaseTim
 	@Column(nullable = false, length = 100)
 	private String artist;
 
-	@Column(name = "youtube_video_id", length = 50)
-	private String youtubeVideoId;
+	@Column(length = 20)
+	private String generation;
+
+	@Enumerated(EnumType.STRING)
+	private Genre genre;
 
 	@Column(name = "youtube_url", length = 500)
 	private String youtubeUrl;
 
 	@Builder
-	public Song(String title, String artist, String youtubeVideoId, String youtubeUrl) {
+	public Song(String title, String artist, String generation, Genre genre, String youtubeUrl) {
 		this.title = title;
 		this.artist = artist;
-		this.youtubeVideoId = youtubeVideoId;
+		this.generation = generation;
+		this.genre = genre;
 		this.youtubeUrl = youtubeUrl;
 	}
 
-	public void updateYoutubeInfo(String youtubeVideoId, String youtubeUrl) {
-		this.youtubeVideoId = youtubeVideoId;
+	public void updateYoutubeUrl(String youtubeUrl) {
 		this.youtubeUrl = youtubeUrl;
 	}
 }

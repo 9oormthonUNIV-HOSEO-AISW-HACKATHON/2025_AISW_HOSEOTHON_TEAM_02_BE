@@ -1,12 +1,12 @@
 package com.backend.dosol.controller;
 
-import com.backend.dosol.dto.DataResponse;
-import com.backend.dosol.dto.PlaylistCompleteResponse;
-import com.backend.dosol.dto.PlaylistResponse;
-import com.backend.dosol.dto.SongResponse;
+import com.backend.dosol.dto.common.DataResponse;
+import com.backend.dosol.dto.playlist.PlaylistCompleteResponse;
+import com.backend.dosol.dto.playlist.PlaylistRegisterRequest;
+import com.backend.dosol.dto.playlist.PlaylistResponse;
+import com.backend.dosol.dto.song.SongResponse;
 import com.backend.dosol.entity.Playlist;
-import com.backend.dosol.entity.PlaylistSong;
-import com.backend.dosol.repository.PlaylistSongRepository;
+import com.backend.dosol.entity.Song;
 import com.backend.dosol.service.PlaylistService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -16,37 +16,30 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/api/playlists")
+@RequestMapping("/api/v1/playlists")
 @RequiredArgsConstructor
 public class PlaylistController {
 
-    private final PlaylistService playlistService;
-    private final PlaylistSongRepository playlistSongRepository;
+	private final PlaylistService playlistService;
 
-    @PostMapping("/{playlistId}/complete")
-    public ResponseEntity<DataResponse<PlaylistCompleteResponse>> completePlaylist(@PathVariable Long playlistId) {
-        String authCode = playlistService.completePlaylist(playlistId);
-        PlaylistCompleteResponse playlistData = PlaylistCompleteResponse.builder()
-                .userCode(authCode)
-                .build();
-        return ResponseEntity.ok(DataResponse.of(playlistData));
-    }
+	@PostMapping("/register")
+	public ResponseEntity<DataResponse<PlaylistCompleteResponse>> registerPlaylist(
+		@RequestBody PlaylistRegisterRequest request) {
+		PlaylistCompleteResponse response = playlistService.registerPlaylist(request);
+		return ResponseEntity.ok(DataResponse.of(response));
+	}
 
-    @GetMapping("/auth/{authCode}")
-    public ResponseEntity<DataResponse<List<PlaylistResponse>>> getPlaylistsByAuthCode(@PathVariable String authCode) {
-        List<Playlist> playlists = playlistService.getPlaylistsByAuthCode(authCode);
+	@GetMapping("/{playlistId}")
+	public ResponseEntity<DataResponse<PlaylistResponse>> getPlaylist(
+		@PathVariable Long playlistId) {
+		Playlist playlist = playlistService.getPlaylist(playlistId);
 
-        List<PlaylistResponse> playlistResponses = playlists.stream()
-                .map(playlist -> {
-                    List<SongResponse> songs = playlistSongRepository.findByPlaylist(playlist)
-                            .stream()
-                            .map(PlaylistSong::getSong)
-                            .map(SongResponse::from)
-                            .collect(Collectors.toList());
-                    return PlaylistResponse.from(playlist, songs);
-                })
-                .collect(Collectors.toList());
+		List<SongResponse> songResponses = playlist.getPlaylistSongs().stream()
+			.map(playlistSong -> SongResponse.from(playlistSong.getSong()))
+			.collect(Collectors.toList());
 
-        return ResponseEntity.ok(DataResponse.of(playlistResponses));
-    }
+		PlaylistResponse playlistResponse = PlaylistResponse.from(playlist, songResponses);
+
+		return ResponseEntity.ok(DataResponse.of(playlistResponse));
+	}
 }
