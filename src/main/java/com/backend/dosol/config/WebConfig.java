@@ -10,7 +10,7 @@ public class WebConfig implements WebMvcConfigurer {
 	@Override
 	public void addCorsMappings(CorsRegistry registry) {
 		registry.addMapping("/api/**")
-			.allowedOrigins("*") // TODO: 프론트엔드 서버 주소로 변경해야 합니다.
+			.allowedOrigins("http://localhost:5173") // TODO: 프론트엔드 서버 주소로 변경해야 합니다.
 			.allowedMethods("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS")
 			.allowedHeaders("*")
 			.allowCredentials(true)
