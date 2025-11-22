@@ -1,34 +1,31 @@
-# ============================================
-# 1단계: Gradle로 빌드
-# ============================================
-FROM gradle:7.6.0-jdk17 AS builder
+# 1단계: 빌드
+FROM eclipse-temurin:21-jdk-jammy AS builder
 
 WORKDIR /workspace/app
 
-# Gradle 관련 파일 먼저 복사
+# Gradle wrapper 전체 복사
 COPY gradlew .
 COPY gradle gradle
+
+# 빌드 스크립트 복사
 COPY build.gradle .
 COPY settings.gradle .
 
-# gradlew 실행 권한 부여
-RUN chmod +x gradlew
+RUN chmod +x ./gradlew
 
-# 나머지 소스 코드 복사
+# 소스 폴더 전체 복사
 COPY src src
 
-# 빌드
-RUN ./gradlew build -x test --no-daemon
+# 테스트 제외하고 빌드 실행
+RUN ./gradlew build --no-daemon -x test
 
 
-# ============================================
-# 2단계: 실행(Stage)
-# ============================================
-FROM eclipse-temurin:17-jre
+# 2단계: 실행
+FROM eclipse-temurin:21-jre-jammy
 
 WORKDIR /app
 
-# 1단계에서 만든 jar 파일 복사
+# 빌드한 jar 복사
 COPY --from=builder /workspace/app/build/libs/*.jar app.jar
 
 EXPOSE 8080
