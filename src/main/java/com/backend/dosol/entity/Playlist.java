@@ -19,12 +19,8 @@ public class Playlist extends BaseTimeEntity {
 	@JoinColumn(name = "user_id", nullable = false)
 	private User user;
 
-	@Column(nullable = false, length = 100)
-	private String title;
-
 	@Builder
-	public Playlist(User user, String title) {
+	public Playlist(User user) {
 		this.user = user;
-		this.title = title;
 	}
 }

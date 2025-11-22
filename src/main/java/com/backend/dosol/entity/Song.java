@@ -22,21 +22,22 @@ public class Song { // 노래는 생성일자가 굳이 필요 없다면 BaseTim
 	@Column(nullable = false, length = 100)
 	private String artist;
 
-	@Column(length = 20)
-	private String generation;
+	@Column(name = "youtube_video_id", length = 50)
+	private String youtubeVideoId;
 
-	@Enumerated(EnumType.STRING)
-	private Genre genre;
-
-	@Column(name = "album_cover", length = 500)
-	private String albumCover;
+	@Column(name = "youtube_url", length = 500)
+	private String youtubeUrl;
 
 	@Builder
-	public Song(String title, String artist, String generation, Genre genre, String albumCover) {
+	public Song(String title, String artist, String youtubeVideoId, String youtubeUrl) {
 		this.title = title;
 		this.artist = artist;
-		this.generation = generation;
-		this.genre = genre;
-		this.albumCover = albumCover;
+		this.youtubeVideoId = youtubeVideoId;
+		this.youtubeUrl = youtubeUrl;
+	}
+
+	public void updateYoutubeInfo(String youtubeVideoId, String youtubeUrl) {
+		this.youtubeVideoId = youtubeVideoId;
+		this.youtubeUrl = youtubeUrl;
 	}
 }

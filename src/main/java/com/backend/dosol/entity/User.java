@@ -36,4 +36,8 @@ public class User extends BaseTimeEntity {
 		this.generation = generation;
 		this.favoriteGenre = favoriteGenre;
 	}
+
+	public void updateAuthCode(String authCode) {
+		this.authCode = authCode;
+	}
 }
