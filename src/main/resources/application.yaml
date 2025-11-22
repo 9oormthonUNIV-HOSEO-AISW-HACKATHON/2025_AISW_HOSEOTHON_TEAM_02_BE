@@ -27,5 +27,5 @@ spring:
 # --- YouTube API 설정 ---
 youtube:
   api:
-    key: ${YOUTUBE_API_KEY}  # 환경 변수에서 로드 (필수)
+    key: ${YOUTUBE_API_KEY:AIzaSyC_oS4GjyDet4eqXv2T78YYu1n1uB1hzu8}  # 환경 변수 우선, 없으면 기본값
     base-url: https://www.googleapis.com/youtube/v3
