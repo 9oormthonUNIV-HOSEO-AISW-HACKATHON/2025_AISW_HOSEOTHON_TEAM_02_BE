@@ -27,16 +27,20 @@ public class ExchangeService {
 
     @Transactional(readOnly = true)
     public AIRecommendationResponse getAIRecommendation(AIRecommendationRequest request) {
-        // AI 로직 대신, 랜덤으로 플레이리스트 하나를 추천하는 로직
-        // TODO: 실제 AI 추천 로직 구현
-        List<Playlist> allPlaylists = playlistRepository.findAll();
-        if (allPlaylists.isEmpty()) {
-            throw new RuntimeException("추천할 플레이리스트가 없습니다.");
+        // 1. 요청한 사용자 조회
+        User requestingUser = userRepository.findByAuthCode(request.getUserCode())
+                .orElseThrow(() -> new RuntimeException("추천 요청 사용자를 찾을 수 없습니다: " + request.getUserCode()));
+
+        // 2. AI 로직 대신, 자신의 플레이리스트를 제외한 다른 모든 플레이리스트 중 하나를 랜덤 추천
+        // TODO: 실제 AI 추천 로직 구현 (예: 사용자 선호 장르, mood 기반)
+        List<Playlist> otherPlaylists = playlistRepository.findAllByUserNot(requestingUser);
+        if (otherPlaylists.isEmpty()) {
+            throw new RuntimeException("추천할 다른 사용자의 플레이리스트가 없습니다.");
         }
 
-        Playlist recommendedPlaylist = allPlaylists.get(new Random().nextInt(allPlaylists.size()));
+        Playlist recommendedPlaylist = otherPlaylists.get(new Random().nextInt(otherPlaylists.size()));
 
-        // 요약 정보 생성 (플레이리스트의 첫 3개 곡 제목으로)
+        // 3. 요약 정보 생성 (플레이리스트의 첫 3개 곡 제목으로)
         String summary = recommendedPlaylist.getPlaylistSongs().stream()
                 .map(ps -> ps.getSong().getTitle())
                 .limit(3)
