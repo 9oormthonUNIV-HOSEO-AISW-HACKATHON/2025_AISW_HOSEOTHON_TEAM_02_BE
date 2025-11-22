@@ -127,6 +127,7 @@ fabric.properties
 !.idea/codeStyles
 !.idea/runConfigurations
 
+
 ### Java ###
 # Compiled class file
 *.class
@@ -214,3 +215,5 @@ $RECYCLE.BIN/
 
 *.yaml
 # End of https://www.toptal.com/developers/gitignore/api/windows,macos,intellij+all,java
+
+!gradle/wrapper/gradle-wrapper.jar
