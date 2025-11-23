@@ -1,4 +1,4 @@
-package com.backend.dosol.dto;
+package com.backend.dosol.dto.youtube;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class YouTubeSearchRequest {
-    private String title;
-    private String artist;
+
+	private String title;
+	private String artist;
 }

@@ -1,4 +1,4 @@
-package com.backend.dosol.dto;
+package com.backend.dosol.dto.youtube;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -10,9 +10,10 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class YouTubeSearchResponse {
-    private String videoId;
-    private String title;
-    private String channelTitle;
-    private String thumbnailUrl;
-    private String youtubeUrl;
+
+	private String videoId;
+	private String title;
+	private String channelTitle;
+	private String thumbnailUrl;
+	private String youtubeUrl;
 }

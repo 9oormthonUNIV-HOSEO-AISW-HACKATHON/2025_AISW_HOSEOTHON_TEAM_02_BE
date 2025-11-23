@@ -9,5 +9,8 @@ import java.util.List;
 
 @Repository
 public interface PlaylistRepository extends JpaRepository<Playlist, Long> {
-    List<Playlist> findTop5ByUserOrderByCreatedAtDesc(User user);
+
+	List<Playlist> findTop5ByUserOrderByCreatedAtDesc(User user);
+
+	List<Playlist> findAllByUserNot(User user);
 }
